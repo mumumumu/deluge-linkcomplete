@@ -14,7 +14,7 @@ def hard_link(src, dst):
     if not os.path.exists(dst):
         print('Creating hard link: {0} <===> {1}'.format(src,dst))
         if(os.name=='nt'):
-            ctypes.windll.kernel32.CreateHardLinkW(u'',u'',0)
+            ctypes.windll.kernel32.CreateHardLinkW(dst,src,0)
         else:
             os.link(src,dst)
     else:
