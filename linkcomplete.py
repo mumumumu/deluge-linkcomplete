@@ -24,20 +24,21 @@ torrent_id   = sys.argv[1]
 torrent_name = sys.argv[2]
 save_path    = sys.argv[3]
 
+# PREREQ: #seeding/ and #temp/ directories must exist
 src_path  = os.path.join(save_path,torrent_name)
-dest_path = os.path.join(os.path.dirname(save_path),'#temp')
+dst_path = src_path.replace('#seeding','#temp')
 
 if os.path.isdir(src_path):
     print('Creating links for folder {0}'.format(src_path))
-    dest_path = os.path.join(dest_path, torrent_name)
-    make_dir(dest_path)
-    for f in os.listdir(src_path):
-        src = os.path.join(src_path,f)
-        dst = os.path.join(dest_path,f)
-        hard_link(src,dst)
+    make_dir(dst_path)
+    for root,dirs,files in os.walk(src_path):
+        dst_path = root.replace('#seeding','#temp')
+        for d in dirs:
+            make_dir(os.path.join(dst_path,d))
+        for f in files:
+            src = os.path.join(root,f)
+            dst = os.path.join(dst_path,f)
+            hard_link(src,dst)
 else:
-    make_dir(dest_path)
-    src = src_path
-    dst = os.path.join(dest_path,torrent_name)
-    hard_link(src,dst)
+    hard_link(src_path,dst_path)
 
